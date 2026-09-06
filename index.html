@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LOGIN</title>
-  <link href="output.css" rel="stylesheet">
-
-  <!-- Include Supabase -->
+  <link href="./output.css" rel="stylesheet">
+  
+  <!-- Load Supabase Library FIRST -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Load config.js SECOND -->
   <script src="config.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden; font-family: Arial, sans-serif;">
 
   <!-- Background Video -->
   <video autoplay loop muted playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-    <source src="src\loop-bg.mp4">
+    <source src="src/loop-bg.mp4" type="video/mp4">
   </video>
 
   <!-- Dark Overlay -->
@@ -51,49 +52,39 @@
   </div>
 
   <script>
-    // ... (toggle password visibility code here) ...
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    togglePassword.addEventListener('click', function() {
+      if (password.type === 'password') {
+        password.type = 'text';
+        this.textContent = 'Hide';
+      } else {
+        password.type = 'password';
+        this.textContent = 'Show';
+      }
+    });
 
+    // Login form submission
     document.getElementById('loginForm').addEventListener('submit', async function(event) {
       event.preventDefault(); 
       
       const email = document.getElementById('email').value;
       const pass = document.getElementById('password').value;
       
-      // Supabase Login
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Use window.supabaseClient (Created in config.js)
+      const { data, error } = await window.supabaseClient.auth.signInWithPassword({
         email: email,
         password: pass,
       });
 
       if (error) {
-        alert('Invalid email or password.');
+        alert('Invalid email or password. Please try again.');
       } else {
-        // Save email for the dashboard
         sessionStorage.setItem('userEmail', email);
-        
-        // Check if profile exists in database, if not, create one
-        const { data: existingProfile } = await supabase
-            .from('student_profiles')
-            .select('id, role')
-            .eq('id', data.user.id)
-            .single();
-
-        if (!existingProfile) {
-            await supabase.from('student_profiles').insert({
-                id: data.user.id,
-                email: data.user.email,
-                first_name: data.user.user_metadata?.first_name || '',
-                last_name: data.user.user_metadata?.last_name || '',
-                role: email === 'admin@essu.edu.ph' ? 'admin' : 'student'
-            });
-        } else if (email === 'admin@essu.edu.ph' && existingProfile.role !== 'admin') {
-            // Ensure the admin account is actually an admin in the DB
-            await supabase.from('student_profiles').update({ role: 'admin' }).eq('id', data.user.id);
-        }
-
         window.location.href = 'dashboard.html';
       }
     });
-</script>
+  </script>
 </body>
 </html>
