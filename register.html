@@ -4,18 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
-  <link href="output.css" rel="stylesheet">
-  
-  <!-- Load Supabase Library FIRST -->
+ <link href="output.cs" rel="stylesheet">
+
+  <!-- Include Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Load config.js SECOND -->
   <script src="config.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden; font-family: Arial, sans-serif;">
 
   <!-- Background Video -->
   <video autoplay loop muted playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-    <source src="src/loop-bg.mp4" type="video/mp4">
+    <source src="src\loop-bg.mp4">
   </video>
 
   <!-- Dark Overlay -->
@@ -58,7 +57,7 @@
     </form>
   </div>
 
-  <script>
+   <script>
     // Toggle password visibility logic
     const toggleRegPassword = document.getElementById('toggleRegPassword');
     const regPassword = document.getElementById('regPassword');
@@ -89,29 +88,46 @@
         return;
       }
 
-      // Use window.supabaseClient (Created in config.js)
-      const { data, error } = await window.supabaseClient.auth.signUp({
-        email: email,
-        password: pass,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName
-          }
-        }
-      });
+      // VIBE CHECK: Ensure Supabase client is actually loaded
+      if (typeof supabase === 'undefined') {
+        alert("Database connection error! Please make sure your config.js has your correct Supabase keys.");
+        return;
+      }
 
-      if (error) {
-        alert("Registration Error: " + error.message);
-      } else {
-        if (data.user && data.user.identities && data.user.identities.length === 0) {
-           alert("Email already registered. Please log in.");
-        } else {
-           alert("Registration successful! Please check your email to confirm your account.");
-           window.location.href = 'index.html';
-        }
+      try {
+        // Sign up with Supabase
+        const { data, error } = await window.supabaseClient.auth.signUp({
+          email: email,
+          password: pass,
+          options: {
+            data: {
+              first_name: firstName,
+              last_name: lastName
+            }
+          }
+        });
+
+        
+        if (error) {
+  console.error("SIGN UP ERROR:", error);
+  alert("Registration Error: " + error.message);
+} else {
+  console.log("SIGN UP DATA:", data);
+
+  alert(
+    "SUCCESS!\n\n" +
+    "User ID: " + (data.user?.id || "NONE") + "\n" +
+    "Email: " + (data.user?.email || "NONE") + "\n" +
+    "Session: " + (data.session ? "YES" : "NO")
+  );
+}
+
+
+      } catch (err) {
+        alert("Unexpected error: " + err.message);
       }
     });
   </script>
+
 </body>
 </html>
