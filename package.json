@@ -1110,5 +1110,8 @@
   },
   "allowScripts": {
     "@parcel/watcher@2.5.1": true
+  },
+  "devDependencies": {
+    "supabase": "^2.116.0"
   }
 }
