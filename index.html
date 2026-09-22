@@ -4,24 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LOGIN</title>
-  <link href="./output.css" rel="stylesheet">
-  
-  <!-- Load Supabase Library FIRST -->
+  <link href="output.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Load config.js SECOND -->
   <script src="config.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden; font-family: Arial, sans-serif;">
 
-  <!-- Background Video -->
   <video autoplay loop muted playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
     <source src="src/loop-bg.mp4" type="video/mp4">
   </video>
 
-  <!-- Dark Overlay -->
   <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: rgba(0,0,0,0.4);"></div>
 
-  <!-- Header -->
   <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 3; padding: 20px 40px; background: rgba(94, 14, 91, 0.3); display: flex; justify-content: space-between; align-items: center;">
     <div style="display: flex; align-items: center; gap: 15px;">
       <a href="index.html" class="logo-link"></a>
@@ -31,19 +25,20 @@
     </div>
   </header>
 
-  <!-- Login Form -->
   <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; background: rgba(255,255,255,0.15); padding: 40px; border-radius: 20px; width: 350px; text-align: center;">
     <h1 style="color: white; margin-bottom: 30px;">Welcome Back</h1>
 
     <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); margin-bottom: 15px; box-sizing: border-box;">
+      <input type="text" id="email" placeholder="Email" required
+             style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); margin-bottom: 15px; box-sizing: border-box;">
 
-      <div style="position: relative;">
-        <input type="password" id="password" placeholder="Password" required style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box; padding-right: 60px;">
-        <button type="button" id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 12px; color: #4a2f2f; font-weight: bold;">Show</button>
-      </div>
+      <input type="password" id="password" placeholder="Password" required
+             style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box; margin-bottom: 15px;">
 
-      <button type="submit" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: #8f228b; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px;">Log In</button>
+      <button type="submit"
+              style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: #8f228b; color: white; font-size: 18px; font-weight: bold; cursor: pointer;">
+        Log In
+      </button>
 
       <p style="color: white; margin-top: 15px;">
         Don't have an account? <a href="register.html" style="color: #ca5bd6; text-decoration: none; font-weight: bold;">Sign Up</a>
@@ -52,34 +47,18 @@
   </div>
 
   <script>
-    // Toggle password visibility
-    const togglePassword = document.getElementById('togglePassword');
-    const password = document.getElementById('password');
-    togglePassword.addEventListener('click', function() {
-      if (password.type === 'password') {
-        password.type = 'text';
-        this.textContent = 'Hide';
-      } else {
-        password.type = 'password';
-        this.textContent = 'Show';
-      }
-    });
-
-    // Login form submission
     document.getElementById('loginForm').addEventListener('submit', async function(event) {
-      event.preventDefault(); 
-      
-      const email = document.getElementById('email').value;
-      const pass = document.getElementById('password').value;
-      
-      // Use window.supabaseClient (Created in config.js)
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+
       const { data, error } = await window.supabaseClient.auth.signInWithPassword({
         email: email,
-        password: pass,
+        password: pass
       });
 
       if (error) {
-        alert('Invalid email or password. Please try again.');
+        alert('Login error: ' + error.message);
       } else {
         sessionStorage.setItem('userEmail', email);
         window.location.href = 'dashboard.html';

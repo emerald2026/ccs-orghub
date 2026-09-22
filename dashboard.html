@@ -1,19 +1,159 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCS OrgHub Dashboard</title>
-    <link href="./output.css" rel="stylesheet">   
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f0f2f5; }
+    .topbar { background: linear-gradient(90deg,#661970,#4a104d); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .topbar a { color: #ffb3ff; text-decoration: none; margin-left: 20px; font-weight: bold; }
+    .topbar a:hover { text-decoration: underline; }
+    .container { padding: 40px; max-width: 1100px; margin: auto; }
+    .welcome-card { background: white; padding: 30px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 30px; border-left: 6px solid #8f228b; }
+    .welcome-card h1 { margin: 0 0 8px; color: #4a104d; }
+    .welcome-card p { margin: 0; color: #666; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 25px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 5px solid #8f228b; }
+    .stat-card h4 { margin: 0 0 10px; color: #666; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-card .num { font-size: 2.2rem; font-weight: bold; color: #661970; margin: 0; }
+    .card { background: white; padding: 25px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; }
+    .btn { display: inline-block; padding: 12px 22px; background: #8f228b; color: white; border-radius: 10px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+    .btn:hover { background: #661970; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #f8f8f8; font-weight: 600; color: #4a104d; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+    .badge-purple { background: #f3e6f2; color: #8f228b; }
+  </style>
 </head>
-<body class="role-admin">
-         <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 3; padding: 20px 40px; background: rgba(94, 14, 91, 0.3); display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="index.html" class="logo-link"></a>
-      <img src="src/logo.png" alt="ESSU Logo" style="height: 50px; width: auto;">
-      <img src="src/ccs.png" alt="ESSU Logo" style="height: 50px; width: auto;">
-      <span style="color: rgba(255, 255, 255, 0.6);">CCS ORGHUB</span>
+<body>
+
+  <div class="topbar">
+    <h2 style="margin:0;">CCS OrgHub — Dashboard</h2>
+    <div>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="students.html">Students</a>
+      <a href="#" onclick="logout()" style="color:#ff9999;">Logout</a>
     </div>
-  </header>   
+  </div>
+
+  <div class="container">
+
+    <!-- Welcome -->
+    <div class="welcome-card">
+      <h1 id="welcome">Loading...</h1>
+      <p id="role">Role: —</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h4>Total Students</h4>
+        <p class="num" id="totalStudents">—</p>
+      </div>
+      <div class="stat-card" style="border-top-color: #5cb85c;">
+        <h4>Courses</h4>
+        <p class="num" id="totalCourses">—</p>
+      </div>
+      <div class="stat-card" style="border-top-color: #f0ad4e;">
+        <h4>Year Levels</h4>
+        <p class="num" id="totalYears">—</p>
+      </div>
+      <div class="stat-card" style="border-top-color: #d9534f;">
+        <h4>Registered Users</h4>
+        <p class="num" id="totalUsers">—</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <h3 style="margin-top:0; color:#4a104d;">Quick Actions</h3>
+      <a href="students.html" class="btn">Manage Students →</a>
+    </div>
+
+    <!-- Recent Students Table -->
+    <div class="card">
+      <h3 style="margin-top:0; color:#4a104d;">Recent Students</h3>
+      <table>
+        <thead>
+          <tr><th>Student ID</th><th>Name</th><th>Course</th><th>Year</th></tr>
+        </thead>
+        <tbody id="recentStudents">
+          <tr><td colspan="4" style="text-align:center; color:#999;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    async function loadDashboard() {
+      const user = await requireLogin();
+      if (!user) return;
+
+      // Profile
+      const profile = await getCurrentUserProfile();
+      document.getElementById('welcome').textContent =
+        'Welcome, ' + (profile?.first_name || user.email) + '!';
+      document.getElementById('role').textContent =
+        'Role: ' + (profile?.role || 'student');
+
+      // Students
+      const { data: students, error } = await window.supabaseClient
+        .from('students')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        document.getElementById('totalStudents').textContent = '0';
+        return;
+      }
+
+      document.getElementById('totalStudents').textContent = students.length;
+
+      const courses = new Set(students.map(s => s.course).filter(Boolean));
+      document.getElementById('totalCourses').textContent = courses.size;
+
+      const years = new Set(students.map(s => s.year_level).filter(Boolean));
+      document.getElementById('totalYears').textContent = years.size;
+
+      // Profiles count (may be blocked by RLS — show fallback)
+      try {
+        const { count } = await window.supabaseClient
+          .from('profiles')
+          .select('*', { count: 'exact', head: true });
+        document.getElementById('totalUsers').textContent = count ?? '—';
+      } catch {
+        document.getElementById('totalUsers').textContent = '—';
+      }
+
+      // Recent students
+      const tbody = document.getElementById('recentStudents');
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">No students yet. <a href="students.html" style="color:#8f228b;">Add one →</a></td></tr>`;
+      } else {
+        tbody.innerHTML = students.slice(0, 5).map(s => `
+          <tr>
+            <td><span class="badge badge-purple">${s.student_id}</span></td>
+            <td>${s.first_name} ${s.last_name}</td>
+            <td>${s.course || '—'}</td>
+            <td>${s.year_level || '—'}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function logout() {
+      await window.supabaseClient.auth.signOut();
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    loadDashboard();
+  </script>
 </body>
 </html>
