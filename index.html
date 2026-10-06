@@ -1,90 +1,208 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LOGIN</title>
-  <link href="output.cs" rel="stylesheet">
-  
-  <!-- Load Supabase Library FIRST -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Load config.js SECOND -->
-  <script src="config.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden; font-family: Arial, sans-serif;">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — CCS OrgHub</title>
 
-  <!-- Background Video -->
-  <video autoplay loop muted playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <link rel="icon" type="image/png" href="ccs.png" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js" onerror="console.warn('config.js not found')"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'] },
+        colors: { purple: {
+          950:'#0f041c',900:'#1e0836',850:'#2d0a4e',800:'#3b0764',700:'#581c87',
+          600:'#7e22ce',500:'#a855f7',400:'#c084fc',300:'#d8b4fe',200:'#e9d5ff',100:'#f3e8ff',50:'#faf5ff'
+        }}
+      }}
+    }
+  </script>
+
+  <style>
+    body { background: radial-gradient(circle at 10% 20%, #2d0a4e 0%, #1a052e 45%, #0a0212 100%); background-attachment: fixed; color: #f3e8ff; }
+    .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(24px); border: 1px solid rgba(168,85,247,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .glass-header { background: rgba(15,4,28,0.7); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(168,85,247,0.2); }
+    .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    input::placeholder { color: rgba(216,180,254,0.5); }
+  </style>
+</head>
+
+<body class="h-full font-sans antialiased selection:bg-purple-500 selection:text-white overflow-hidden">
+
+  <video autoplay loop muted playsinline class="fixed inset-0 w-full h-full object-cover z-0 opacity-25">
     <source src="src/loop-bg.mp4" type="video/mp4">
   </video>
 
-  <!-- Dark Overlay -->
-  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: rgba(0,0,0,0.4);"></div>
+  <div class="orb w-96 h-96 bg-purple-700/40 top-0 left-10 animate-pulse"></div>
+  <div class="orb w-[30rem] h-[30rem] bg-purple-900/50 bottom-0 right-10"></div>
+  <div class="orb w-80 h-80 bg-fuchsia-600/25 top-1/2 left-1/3"></div>
 
-  <!-- Header -->
-  <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 3; padding: 20px 40px; background: rgba(94, 14, 91, 0.3); display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="index.html" class="logo-link"></a>
-      <img src="src/logo.png" alt="ESSU Logo" style="height: 50px; width: auto;">
-      <img src="src/ccs.png" alt="ESSU Logo" style="height: 50px; width: auto;">
-      <span style="color: rgba(255, 255, 255, 0.6);">CCS ORGHUB</span>
-    </div>
+  <div class="fixed inset-0 bg-black/40 z-[1]"></div>
+
+  <header class="glass-header fixed top-0 left-0 right-0 z-30 px-4 md:px-10 py-3.5 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3 md:gap-4">
+      <img src="src/logo.png" alt="ESSU Logo" class="h-10 md:h-12 w-auto">
+      <img src="src/ccs.png" alt="CCS Logo" class="h-10 md:h-12 w-auto">
+      <div class="hidden sm:flex flex-col leading-tight">
+        <span class="text-xs md:text-sm font-extrabold tracking-widest text-white">CCS ORGHUB</span>
+        <span class="text-[10px] text-purple-300/70 uppercase tracking-wider">Organizational Portal</span>
+      </div>
+    </a>
   </header>
 
-  <!-- Login Form -->
-  <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; background: rgba(255,255,255,0.15); padding: 40px; border-radius: 20px; width: 350px; text-align: center;">
-    <h1 style="color: white; margin-bottom: 30px;">Welcome Back</h1>
+  <main class="relative z-10 flex items-center justify-center min-h-screen p-4 pt-24 pb-8">
 
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); margin-bottom: 15px; box-sizing: border-box;">
+    <div class="glass-card w-full max-w-md rounded-3xl p-7 md:p-8 space-y-6">
 
-      <div style="position: relative;">
-        <input type="password" id="password" placeholder="Password" required style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box; padding-right: 60px;">
-        <button type="button" id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 12px; color: #4a2f2f; font-weight: bold;">Show</button>
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-purple-500 to-purple-800 border border-purple-400/40 flex items-center justify-center shadow-lg shadow-purple-600/40">
+          <i data-lucide="shield-check" class="w-7 h-7 text-white"></i>
+        </div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">Welcome Back</h1>
+        <p class="text-xs text-purple-300/70">Sign in to access CCS OrgHub</p>
       </div>
 
-      <button type="submit" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: #8f228b; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px;">Log In</button>
+      <form id="loginForm" class="space-y-4 text-xs">
 
-      <p style="color: white; margin-top: 15px;">
-        Don't have an account? <a href="register.html" style="color: #ca5bd6; text-decoration: none; font-weight: bold;">Sign Up</a>
-      </p>
-    </form>
-  </div>
+        <div>
+          <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Email Address</label>
+          <div class="relative">
+            <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/70"></i>
+            <input type="email" id="email" required placeholder="student@gmail.com"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+          </div>
+        </div>
 
+        <div>
+          <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Password</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/70"></i>
+            <input type="password" id="password" required placeholder="••••••••"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl pl-10 pr-16 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+            <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-purple-300 hover:text-white px-2 py-1 rounded-lg hover:bg-purple-500/20">Show</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded border-purple-500/40 bg-purple-950/60 text-purple-500">
+            <span class="text-[11px] text-purple-300/80 font-medium">Remember me</span>
+          </label>
+        </div>
+
+        <button type="submit" id="submitBtn"
+          class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-purple-700 text-white font-extrabold text-sm shadow-lg shadow-purple-600/40 hover:brightness-110 transition-all flex items-center justify-center gap-2 border border-purple-400/40 mt-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span>Log In</span>
+        </button>
+
+        <p class="text-center text-xs text-purple-300/80 pt-2">
+          Don't have an account?
+          <a href="register.html" class="text-purple-300 hover:text-white font-bold">Sign Up</a>
+        </p>
+
+      </form>
+    </div>
+  </main>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+  <script src="shared.js"></script>
   <script>
-    // Toggle password visibility
-    const togglePassword = document.getElementById('togglePassword');
-    const password = document.getElementById('password');
-    togglePassword.addEventListener('click', function() {
-      if (password.type === 'password') {
-        password.type = 'text';
-        this.textContent = 'Hide';
-      } else {
-        password.type = 'password';
-        this.textContent = 'Show';
+    document.addEventListener('DOMContentLoaded', async () => {
+      initSupabase();
+      lucide.createIcons();
+
+      if (!window.supabaseClient) {
+        showToast('Connection Error', 'Supabase not loaded. Check config.js.');
+        return;
       }
+
+      const rememberedEmail = localStorage.getItem('rememberedEmail');
+      if (rememberedEmail) {
+        document.getElementById('email').value = rememberedEmail;
+        document.getElementById('rememberMe').checked = true;
+      }
+
+      try {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        if (session) await redirectByRole(session.user);
+      } catch (e) { console.warn(e); }
     });
 
-    // Login form submission
-    document.getElementById('loginForm').addEventListener('submit', async function(event) {
-      event.preventDefault(); 
-      
-      const email = document.getElementById('email').value;
-      const pass = document.getElementById('password').value;
-      
-      // Use window.supabaseClient (Created in config.js)
-      const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: pass,
-      });
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+      this.textContent = pw.type === 'password' ? 'Show' : 'Hide';
+    });
 
-      if (error) {
-        alert('Invalid email or password. Please try again.');
-      } else {
+    async function redirectByRole(user) {
+      let role = 'student';
+      if (window.supabaseClient && user?.id) {
+        try {
+          const { data: profile } = await window.supabaseClient
+            .from('profiles').select('role').eq('id', user.id).single();
+          if (profile?.role) role = profile.role;
+        } catch {}
+      }
+      const routes = {
+        admin:   'dashboard.html',
+        officer: 'dashboard.html',
+        adviser: 'dashboard.html',
+        student: 'student-dashboard.html',
+      };
+      window.location.replace(routes[role] || 'student-dashboard.html');
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      if (!window.supabaseClient) {
+        showToast('Connection Error', 'Supabase not initialized.');
+        return;
+      }
+
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value;
+      const remember = document.getElementById('rememberMe').checked;
+
+      const btn = document.getElementById('submitBtn');
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span>Signing in...</span>';
+
+      try {
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
+
+        if (error) {
+          showToast('Login Failed', error.message);
+          return;
+        }
+
+        if (remember) localStorage.setItem('rememberedEmail', email);
+        else localStorage.removeItem('rememberedEmail');
+
         sessionStorage.setItem('userEmail', email);
-        window.location.href = 'dashboard.html';
+        showToast('Welcome back!', 'Redirecting...');
+        setTimeout(() => redirectByRole(data.user), 900);
+
+      } catch (err) {
+        showToast('Error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        lucide.createIcons();
       }
     });
   </script>
+
 </body>
 </html>

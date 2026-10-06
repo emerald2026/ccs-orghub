@@ -1,132 +1,305 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
- <link href="output.cs" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — CCS OrgHub</title>
 
-  <!-- Include Supabase -->
+        <link rel="icon" type="image/png" href="ccs.png" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden; font-family: Arial, sans-serif;">
+  <script src="config.js" onerror="console.warn('config.js not found')"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Background Video -->
-  <video autoplay loop muted playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-    <source src="src\loop-bg.mp4">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'] },
+        colors: { purple: {
+          950:'#0f041c',900:'#1e0836',850:'#2d0a4e',800:'#3b0764',700:'#581c87',
+          600:'#7e22ce',500:'#a855f7',400:'#c084fc',300:'#d8b4fe',200:'#e9d5ff',100:'#f3e8ff',50:'#faf5ff'
+        }}
+      }}
+    }
+  </script>
+  <style>
+    html, body { background: radial-gradient(circle at 10% 20%, #2d0a4e 0%, #1a052e 45%, #0a0212 100%); background-attachment: fixed; color: #f3e8ff; margin: 0; padding: 0; }
+    body { min-height: 100vh; overflow-x: hidden; overflow-y: auto; }
+    .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(24px); border: 1px solid rgba(168,85,247,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .glass-header { background: rgba(15,4,28,0.7); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(168,85,247,0.2); }
+    .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    input::placeholder { color: rgba(216,180,254,0.5); }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c084fc' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 36px; }
+    select option { background: #1e0836; color: #f3e8ff; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(15,4,28,0.3); }
+    ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.4); border-radius: 9999px; }
+  </style>
+</head>
+
+<body class="font-sans antialiased selection:bg-purple-500 selection:text-white">
+
+  <video autoplay loop muted playsinline class="fixed inset-0 w-full h-full object-cover z-0 opacity-25">
+    <source src="src/loop-bg.mp4" type="video/mp4">
   </video>
 
-  <!-- Dark Overlay -->
-  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: rgba(0,0,0,0.4);"></div>
+  <div class="orb w-96 h-96 bg-purple-700/40 top-0 left-10 animate-pulse"></div>
+  <div class="orb w-[30rem] h-[30rem] bg-purple-900/50 bottom-0 right-10"></div>
+  <div class="orb w-80 h-80 bg-fuchsia-600/25 top-1/2 left-1/3"></div>
 
-  <!-- Header -->
-  <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 3; padding: 20px 40px; background: rgba(94, 14, 91, 0.3); display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="index.html" class="logo-link"></a>
-      <img src="src/logo.png" alt="ESSU Logo" style="height: 50px; width: auto;">
-      <img src="src/ccs.png" alt="ESSU Logo" style="height: 50px; width: auto;">
-      <span style="color: rgba(255, 255, 255, 0.6);">CCS ORGHUB</span>
-    </div>
+  <div class="fixed inset-0 bg-black/40 z-[1]"></div>
+
+  <header class="glass-header fixed top-0 left-0 right-0 z-30 px-4 md:px-10 py-3.5 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3 md:gap-4">
+      <img src="src/logo.png" alt="ESSU Logo" class="h-10 md:h-12 w-auto">
+      <img src="src/ccs.png" alt="CCS Logo" class="h-10 md:h-12 w-auto">
+      <div class="hidden sm:flex flex-col leading-tight">
+        <span class="text-xs md:text-sm font-extrabold tracking-widest text-white">CCS ORGHUB</span>
+        <span class="text-[10px] text-purple-300/70 uppercase tracking-wider">Registration</span>
+      </div>
+    </a>
+    <a href="index.html" class="px-4 py-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200 hover:text-white text-xs font-bold flex items-center gap-2">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
+    </a>
   </header>
 
-  <!-- Register Form -->
-  <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; background: rgba(255,255,255,0.15); padding: 30px 40px; border-radius: 20px; width: 350px; text-align: center;">
-    <h1 style="color: white; margin-bottom: 20px; margin-top: 0;">Create an Account</h1>
+  <main class="relative z-10 min-h-screen flex items-start justify-center px-4 py-24">
 
-    <form id="registerForm" style="display: flex; flex-direction: column; gap: 12px;">
-      <input type="text" id="firstName" placeholder="First Name" required style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box;">
-      <input type="text" id="lastName" placeholder="Last Name" required style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box;">
-      <input type="email" id="regEmail" placeholder="Email" required style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box;">
+    <div class="glass-card w-full max-w-lg rounded-3xl p-7 md:p-8 space-y-6 mb-8">
 
-      <div style="position: relative;">
-        <input type="password" id="regPassword" placeholder="Password" required style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box; padding-right: 60px;">
-        <button type="button" id="toggleRegPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 12px; color: #4a2f2f; font-weight: bold;">Show</button>
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-purple-500 to-purple-800 border border-purple-400/40 flex items-center justify-center shadow-lg shadow-purple-600/40">
+          <i data-lucide="user-plus" class="w-7 h-7 text-white"></i>
+        </div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">Create an Account</h1>
+        <p class="text-xs text-purple-300/70">Join the CCS OrgHub community</p>
       </div>
 
-      <div style="position: relative;">
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" required style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); box-sizing: border-box; padding-right: 60px;">
-        <button type="button" id="toggleConfirmPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 12px; color: #4a2f2f; font-weight: bold;">Show</button>
-      </div>
+      <form id="registerForm" class="space-y-4 text-xs">
 
-      <button type="submit" style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: #8f228b; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 5px;">Sign Up</button>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">First Name</label>
+            <input type="text" id="firstName" required placeholder="First name"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Last Name</label>
+            <input type="text" id="lastName" required placeholder="Last name"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+          </div>
+        </div>
 
-      <p style="color: white; margin-top: 10px; margin-bottom: 0;">
-        Already have an account? <a href="index.html" style="color: #bc54c9; text-decoration: none; font-weight: bold;">Log In</a>
-      </p>
-    </form>
-  </div>
+        <div>
+          <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Student ID Number</label>
+          <div class="relative">
+            <i data-lucide="hash" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/70"></i>
+            <input type="text" id="studentId" required placeholder="e.g. 00-00000"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+          </div>
+        </div>
 
-   <script>
-    // Toggle password visibility logic
-    const toggleRegPassword = document.getElementById('toggleRegPassword');
-    const regPassword = document.getElementById('regPassword');
-    toggleRegPassword.addEventListener('click', function() {
-      regPassword.type = regPassword.type === 'password' ? 'text' : 'password';
-      this.textContent = regPassword.type === 'password' ? 'Show' : 'Hide';
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Course Program</label>
+            <select id="course" required class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none">
+              <option value="" disabled selected>Select Course</option>
+              <option value="BS Computer Science">BS Computer Science</option>
+              <option value="BS Information Technology">BS Information Technology</option>
+              <option value="BS Entertainment & Multimedia">BS Entertainment & Multimedia</option>
+              <option value="Associate in Computer Tech">Associate in Computer Tech</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Year Level</label>
+            <select id="yearLevel" required class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none">
+              <option value="" disabled selected>Select Year</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Email Address</label>
+          <div class="relative">
+            <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/70"></i>
+            <input type="email" id="regEmail" required placeholder="student@gmail.com"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Password</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/70"></i>
+            <input type="password" id="regPassword" required placeholder="••••••••"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl pl-10 pr-16 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+            <button type="button" id="toggleRegPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-purple-300 hover:text-white px-2 py-1">Show</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-purple-200 mb-1.5 text-[11px] uppercase tracking-wider">Confirm Password</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/70"></i>
+            <input type="password" id="confirmPassword" required placeholder="••••••••"
+              class="w-full bg-purple-950/60 border border-purple-500/40 rounded-xl pl-10 pr-16 py-2.5 text-sm text-white placeholder-purple-300/40 focus:border-purple-400 focus:outline-none" />
+            <button type="button" id="toggleConfirmPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-purple-300 hover:text-white px-2 py-1">Show</button>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn"
+          class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-purple-700 text-white font-extrabold text-sm shadow-lg shadow-purple-600/40 hover:brightness-110 transition-all flex items-center justify-center gap-2 border border-purple-400/40 mt-2">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>Sign Up</span>
+        </button>
+
+        <p class="text-center text-xs text-purple-300/80 pt-2">
+          Already have an account?
+          <a href="index.html" class="text-purple-300 hover:text-white font-bold">Log In</a>
+        </p>
+
+      </form>
+    </div>
+  </main>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+  <script src="shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initSupabase();
+      lucide.createIcons();
+
+      if (!window.supabaseClient) {
+        showToast('Connection Error', 'Supabase not loaded. Check config.js.');
+      }
     });
 
-    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-    const confirmPassword = document.getElementById('confirmPassword');
-    toggleConfirmPassword.addEventListener('click', function() {
-      confirmPassword.type = confirmPassword.type === 'password' ? 'text' : 'password';
-      this.textContent = confirmPassword.type === 'password' ? 'Show' : 'Hide';
-    });
+    function setupToggle(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      btn.addEventListener('click', () => {
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.textContent = input.type === 'password' ? 'Show' : 'Hide';
+      });
+    }
+    setupToggle('regPassword', 'toggleRegPassword');
+    setupToggle('confirmPassword', 'toggleConfirmPassword');
 
-    // Registration form submission with Supabase
-    document.getElementById('registerForm').addEventListener('submit', async function(event) {
-      event.preventDefault(); 
-      
-      const firstName = document.getElementById('firstName').value;
-      const lastName = document.getElementById('lastName').value;
-      const email = document.getElementById('regEmail').value;
+    document.getElementById('registerForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      if (!window.supabaseClient) return showToast('Error', 'Supabase not initialized.');
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const studentId = document.getElementById('studentId').value.trim();
+      const course = document.getElementById('course').value;
+      const yearLevel = document.getElementById('yearLevel').value;
+      const email = document.getElementById('regEmail').value.trim();
       const pass = document.getElementById('regPassword').value;
       const confirmPass = document.getElementById('confirmPassword').value;
-      
-      if (pass !== confirmPass) {
-        alert("Passwords do not match!");
-        return;
-      }
 
-      // VIBE CHECK: Ensure Supabase client is actually loaded
-      if (typeof supabase === 'undefined') {
-        alert("Database connection error! Please make sure your config.js has your correct Supabase keys.");
-        return;
-      }
+      if (!firstName || !lastName) return showToast('Missing Name', 'Enter your full name.');
+      if (!studentId) return showToast('Missing ID', 'Enter your Student ID.');
+      if (!course) return showToast('Missing Course', 'Select your course.');
+      if (!yearLevel) return showToast('Missing Year', 'Select your year.');
+      if (pass.length < 6) return showToast('Weak Password', 'Min 6 characters.');
+      if (pass !== confirmPass) return showToast('Mismatch', 'Passwords do not match.');
+
+      const btn = document.getElementById('submitBtn');
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span>Creating...</span>';
 
       try {
-        // Sign up with Supabase
         const { data, error } = await window.supabaseClient.auth.signUp({
           email: email,
           password: pass,
           options: {
             data: {
               first_name: firstName,
-              last_name: lastName
+              last_name: lastName,
+              student_id: studentId,
+              course: course,
+              year_level: yearLevel,
+              role: 'student',
             }
           }
         });
 
-        
         if (error) {
-  console.error("SIGN UP ERROR:", error);
-  alert("Registration Error: " + error.message);
-} else {
-  console.log("SIGN UP DATA:", data);
+          showToast('Registration Failed', error.message);
+          return;
+        }
 
-  alert(
-    "SUCCESS!\n\n" +
-    "User ID: " + (data.user?.id || "NONE") + "\n" +
-    "Email: " + (data.user?.email || "NONE") + "\n" +
-    "Session: " + (data.session ? "YES" : "NO")
-  );
-}
+        if (data.user) {
+          // Save to profiles + students
+          await saveUserProfile(data.user.id, {
+            first_name: firstName,
+            last_name: lastName,
+            student_id: studentId,
+            course: course,
+            year_level: yearLevel,
+            email: email,
+          });
+        }
 
+        if (data.session) {
+          showToast('Welcome to CCS OrgHub!', 'Redirecting...');
+          setTimeout(() => window.location.replace('student-dashboard.html'), 1400);
+        } else if (data.user) {
+          showToast('Check Your Email', 'Confirmation sent to ' + email);
+        }
+
+        document.getElementById('registerForm').reset();
 
       } catch (err) {
-        alert("Unexpected error: " + err.message);
+        showToast('Unexpected Error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        lucide.createIcons();
       }
     });
+
+    async function saveUserProfile(userId, info) {
+      if (!window.supabaseClient) return;
+
+      // Profiles
+      try {
+        await window.supabaseClient.from('profiles').upsert({
+          id: userId,
+          first_name: info.first_name,
+          last_name: info.last_name,
+          student_id: info.student_id,
+          course: info.course,
+          year_level: info.year_level,
+          role: 'student',
+        }, { onConflict: 'id' });
+        console.log('✅ Profile saved');
+      } catch (e) { console.warn('Profile save:', e); }
+
+      // Students (admin will see this)
+      try {
+        await window.supabaseClient.from('students').upsert({
+          student_id: info.student_id,
+          first_name: info.first_name,
+          last_name: info.last_name,
+          email: info.email,
+          course: info.course,
+          year_level: info.year_level,
+        }, { onConflict: 'student_id' });
+        console.log('✅ Student saved to directory');
+      } catch (e) { console.warn('Student save:', e); }
+    }
   </script>
 
 </body>
