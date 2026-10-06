@@ -9,10 +9,10 @@ function initSupabase() {
       window.supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
       console.log('✅ Supabase initialized.');
     } catch (e) {
-      console.warn('❌ Supabase init failed:', e);
+      console.warn('❌ Supabase init failed — demo mode.', e);
     }
   } else {
-    console.log('⚠️ Supabase config missing.');
+    console.log('⚠️ Demo mode: no Supabase config.');
   }
 }
 
@@ -22,12 +22,14 @@ async function guardAuth() {
   try {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     if (!session) {
-      window.location.replace('index.html');
+      // ✅ CHANGED: goes to login.html now
+      window.location.replace('login.html');
       return false;
     }
     return true;
   } catch (e) {
-    window.location.replace('index.html');
+    // ✅ CHANGED
+    window.location.replace('login.html');
     return false;
   }
 }
@@ -94,9 +96,13 @@ function buildSidebar(activePage, role = 'admin') {
     navHTML += `<div><div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-purple-300/60">${section}</div><div class="space-y-1">`;
     items.forEach(item => {
       const isActive = item.key === activePage;
-      const activeClass = isActive ? 'nav-item-active' : 'text-purple-200/80 hover:bg-purple-500/15 hover:text-white';
+      const activeClass = isActive
+        ? 'nav-item-active'
+        : 'text-purple-200/80 hover:bg-purple-500/15 hover:text-white';
       const iconColor = isActive ? '' : 'text-purple-400';
-      const badge = item.badge ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">${item.badge}</span>` : '';
+      const badge = item.badge
+        ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">${item.badge}</span>`
+        : '';
       const justify = badge ? 'justify-between' : '';
 
       navHTML += `
@@ -166,7 +172,7 @@ function buildTopbar(title, subtitle) {
           <div id="userAvatar" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-purple-400 border border-purple-300/40 flex items-center justify-center font-bold text-sm text-white">A</div>
           <div class="hidden sm:block text-left">
             <div id="userName" class="text-xs font-bold text-white leading-tight">Admin User</div>
-            <div class="text-[10px] text-purple-300/80 font-medium">CCS Faculty Admin</div>
+            <div id="userRoleLabel" class="text-[10px] text-purple-300/80 font-medium">CCS Faculty Admin</div>
           </div>
         </div>
       </div>
@@ -217,7 +223,8 @@ async function confirmLogout() {
     });
   } catch (e) {}
 
-  setTimeout(() => window.location.replace('index.html'), 700);
+  // ✅ CHANGED: goes to login.html
+  setTimeout(() => window.location.replace('login.html'), 700);
 }
 
 /* ---------- TOAST ---------- */
@@ -265,20 +272,30 @@ function buildLogoutModal() {
 
 /* ---------- LOAD USER PROFILE ---------- */
 async function loadUserProfile() {
-  let profile = { first_name: 'Admin', role: 'Faculty Admin' };
+  let profile = { first_name: 'User', role: 'student' };
   if (window.supabaseClient) {
     try {
       const { data: { user } } = await window.supabaseClient.auth.getUser();
       if (user) {
-        const { data } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+        const { data } = await window.supabaseClient
+          .from('profiles').select('*').eq('id', user.id).maybeSingle();
         if (data) profile = data;
       }
     } catch (e) {}
   }
-  const name = profile.first_name || 'Admin';
+  const name = profile.first_name || 'User';
+  const roleLabel = profile.role === 'admin' ? 'Admin'
+                   : profile.role === 'officer' ? 'Organization Officer'
+                   : profile.role === 'adviser' ? 'Faculty Adviser'
+                   : 'Student';
+
   const nameEl = document.getElementById('userName');
   const avEl = document.getElementById('userAvatar');
-  if (nameEl) nameEl.textContent = `${name} User`;
-  if (avEl) avEl.textContent = (name[0] || 'A').toUpperCase();
+  const roleEl = document.getElementById('userRoleLabel');
+
+  if (nameEl) nameEl.textContent = profile.last_name ? `${name} ${profile.last_name}` : name;
+  if (avEl) avEl.textContent = (name[0] || 'U').toUpperCase();
+  if (roleEl) roleEl.textContent = `CCS ${roleLabel}`;
+
   return profile;
 }
