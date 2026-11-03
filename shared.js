@@ -172,7 +172,7 @@ function buildTopbar(title, subtitle) {
           <div id="userAvatar" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-purple-400 border border-purple-300/40 flex items-center justify-center font-bold text-sm text-white">A</div>
           <div class="hidden sm:block text-left">
             <div id="userName" class="text-xs font-bold text-white leading-tight">Admin User</div>
-            <div id="userRoleLabel" class="text-[10px] text-purple-300/80 font-medium">CCS Faculty Admin</div>
+            <div id="userRoleLabel" class="text-[10px] text-purple-300/80 font-medium">CCS </div>
           </div>
         </div>
       </div>
