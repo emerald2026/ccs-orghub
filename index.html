@@ -4,28 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCS OrgHub - Official Portal</title>
-    <link rel="icon" type="image/png" href="src/ccs.png" />
+
+    <link rel="icon" type="image/png" href="ccs.png" />
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
                         violet: {
-                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
-                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
-                            800: '#4c1d95', 900: '#2e1065', 950: '#1a0b2e',
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#4c1d95',
+                            900: '#2e1065',
+                            950: '#1a0b2e',
                         }
                     }
                 }
             }
         }
     </script>
+
     <style>
         html { scroll-behavior: smooth; }
+
         .glass-card-dark {
             background: rgba(30, 15, 60, 0.9);
             backdrop-filter: blur(16px);
@@ -33,15 +53,23 @@
             border: 1px solid rgba(139, 92, 246, 0.3);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
-        .btn-glow { box-shadow: 0 0 15px rgba(139, 92, 246, 0.5); }
-        .btn-glow:hover { box-shadow: 0 0 25px rgba(139, 92, 246, 0.8); }
-        .glow-text { text-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
+
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.8);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800 font-sans antialiased selection:bg-violet-200 selection:text-violet-900">
 
     <!-- ========================================== -->
-    <!-- MASTHEAD                                    -->
+    <!-- 1. MASTHEAD                                 -->
     <!-- ========================================== -->
     <header class="bg-violet-950 py-4 px-4 md:px-8 flex flex-col md:flex-row items-center justify-between border-b border-violet-800/50 relative z-50">
         <div class="flex items-center gap-4 mb-4 md:mb-0">
@@ -53,7 +81,6 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <!-- ✅ Points to login.html now -->
             <a href="login.html" class="text-sm font-semibold text-white hover:text-violet-300 transition hidden md:block">Log in</a>
             <a href="register.html" class="bg-violet-500 hover:bg-violet-600 text-white text-sm font-bold px-6 py-2.5 rounded-full transition btn-glow">Create Account</a>
             <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none ml-2">
@@ -63,7 +90,7 @@
     </header>
 
     <!-- ========================================== -->
-    <!-- MOBILE MENU                                 -->
+    <!-- 2. MOBILE MENU                              -->
     <!-- ========================================== -->
     <div id="mobile-menu" class="hidden md:hidden bg-violet-900 border-b border-violet-800 px-4 py-4 flex flex-col gap-4 text-sm font-semibold text-violet-100 shadow-lg absolute w-full z-40">
         <a href="#" class="hover:text-white transition">Home</a>
@@ -72,12 +99,11 @@
         <a href="#" class="hover:text-white transition">About</a>
         <a href="#" class="hover:text-white transition">FAQs</a>
         <hr class="border-violet-800">
-        <!-- ✅ Updated -->
         <a href="login.html" class="hover:text-white transition">Log in</a>
     </div>
 
     <!-- ========================================== -->
-    <!-- HERO                                        -->
+    <!-- 3. BANNER / HERO                            -->
     <!-- ========================================== -->
     <section class="bg-white pt-20 pb-16 px-4 md:px-8 relative overflow-hidden">
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#4c1d95 1px, transparent 1px); background-size: 20px 20px;"></div>
@@ -117,7 +143,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- FEATURES                                    -->
+    <!-- 4. FEATURES                                 -->
     <!-- ========================================== -->
     <section id="features" class="bg-white py-20 px-4 md:px-8 border-t border-gray-100">
         <div class="max-w-6xl mx-auto">
@@ -155,7 +181,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- HOW IT WORKS                                -->
+    <!-- 5. HOW IT WORKS                             -->
     <!-- ========================================== -->
     <section id="how-it-works" class="bg-violet-950 py-20 px-4 md:px-8 border-y border-violet-900 relative overflow-hidden">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 pointer-events-none"></div>
@@ -199,7 +225,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- CTA                                         -->
+    <!-- 6. CALL TO ACTION                           -->
     <!-- ========================================== -->
     <section class="bg-white py-20 px-4 md:px-8">
         <div class="max-w-5xl mx-auto bg-violet-950 rounded-3xl p-12 md:p-20 text-center border border-violet-800/50 relative overflow-hidden shadow-2xl">
@@ -220,7 +246,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- FOOTER                                      -->
+    <!-- 7. FOOTER                                   -->
     <!-- ========================================== -->
     <footer class="bg-violet-950 text-violet-200 pt-16 pb-8 px-4 md:px-8 border-t-4 border-violet-600">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -257,6 +283,9 @@
         </div>
     </footer>
 
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT                                  -->
+    <!-- ========================================== -->
     <script>
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
